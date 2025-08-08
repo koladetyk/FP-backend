@@ -274,7 +274,7 @@ docker run -d --name redis-test -p 6379:6379 redis:7-alpine
 anvil --fork-url https://eth-mainnet.g.alchemy.com/v2/YOUR_API_KEY --fork-block-number 20500000
 ```
 
-### **Running Tests**
+### **Running Tests -- Check test screenshots directory**
 ```bash
 # Cache & ENS resolution tests
 NODE_ENV=test pnpm jest packages/worker/src/jobs/__tests__/cache.test.ts
@@ -394,31 +394,6 @@ docker compose exec redis redis-cli MONITOR
 **Authentication:** SIWE (Sign-In with Ethereum)
 
 ## 🚀 Production Deployment
-
-### **Scaling the Hybrid Architecture**
-
-**For Production:**
-1. **Ponder**: Deploy on dedicated indexing infrastructure (high memory/CPU)
-2. **Worker Pipeline**: Scale horizontally with multiple worker instances
-3. **API/Frontend**: Containerized deployment with load balancing
-4. **Database**: Managed PostgreSQL with read replicas
-5. **Redis**: Managed Redis cluster for queue + pub/sub
-
-**Infrastructure Recommendations:**
-```yaml
-# production deployment
-ponder:
-  resources: 4 CPU, 8GB RAM, SSD storage
-  replicas: 1 (stateful indexer)
-  
-worker:
-  resources: 2 CPU, 4GB RAM
-  replicas: 3+ (stateless processors)
-  
-api:
-  resources: 1 CPU, 2GB RAM  
-  replicas: 2+ (load balanced)
-```
 
 ### **Environment Configuration**
 ```bash
