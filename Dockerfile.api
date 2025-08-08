@@ -1,0 +1,32 @@
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Copy package files first for better caching
+COPY package.json package-lock.json* ./
+
+# Install root dependencies
+RUN npm install
+
+# Copy your actual project structure (REMOVED src/ and ponder.config.ts)
+COPY packages/ ./packages/
+COPY abis/ ./abis/
+COPY drizzle/ ./drizzle/
+COPY tsconfig.json ./
+
+# Install tsx globally for TypeScript execution
+RUN npm install -g tsx
+
+# Install API package dependencies
+RUN if [ -f "packages/api/package.json" ]; then \
+      cd packages/api && npm install; \
+    else \
+      echo "⚠️  No packages/api/package.json found, installing common API dependencies..."; \
+      npm install express express-session cors ws socket.io ioredis @types/express @types/express-session @types/cors @types/ws; \
+    fi
+
+# Expose the API port
+EXPOSE 4001
+
+# Start the API server
+CMD ["npx", "tsx", "packages/api/src/server.ts"]

@@ -1,0 +1,3 @@
+CREATE USER nounsuser WITH PASSWORD 'password123';
+CREATE DATABASE nouns OWNER nounsuser;
+GRANT ALL PRIVILEGES ON DATABASE nouns TO nounsuser;

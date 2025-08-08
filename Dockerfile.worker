@@ -1,0 +1,26 @@
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Copy package files first for better caching
+COPY package.json package-lock.json* ./
+
+# Install dependencies
+RUN npm install
+
+# Copy your actual project structure (removed src/ and ponder.config.ts)
+COPY packages/ ./packages/
+COPY abis/ ./abis/
+COPY drizzle/ ./drizzle/
+COPY tsconfig.json ./
+
+# Install tsx globally for TypeScript execution
+RUN npm install -g tsx
+
+# Install worker package dependencies if package.json exists
+RUN if [ -f "packages/worker/package.json" ]; then \
+      cd packages/worker && npm install; \
+    fi
+
+# Use the correct entry point from your worker
+CMD ["npx", "tsx", "packages/worker/src/main.ts"]

@@ -1,0 +1,30 @@
+# Dockerfile.indexer (Alpine with build tools)
+FROM node:18-alpine
+
+# Install build tools for native dependencies
+RUN apk add --no-cache python3 make g++ libc6-compat
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+COPY packages/indexer/package.json ./packages/indexer/
+
+# Install dependencies with rebuild
+RUN npm install
+RUN npm rebuild
+
+# Copy source
+COPY packages/indexer/src ./packages/indexer/src
+COPY packages/indexer/ponder*.* ./packages/indexer/
+COPY abis ./abis
+
+WORKDIR /app/packages/indexer
+
+# Fresh install in package directory
+RUN rm -rf node_modules
+RUN npm install
+RUN npm rebuild esbuild
+
+EXPOSE 42069
+CMD ["npm", "run", "dev"]

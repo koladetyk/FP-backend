@@ -1,0 +1,48 @@
+{
+  "name": "nouns-auction-tracker",
+  "type": "module",
+  "version": "1.0.0",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "drizzle:push": "drizzle-kit push",
+    "test": "jest",
+    "build:frontend": "cd packages/frontend && npm run build 2>/dev/null || echo 'Frontend build not available'",
+    "dev": "concurrently \"npm run dev:ponder\" \"npm run dev:api\" \"npm run dev:frontend\"",
+    "dev:ponder": "ponder dev",
+    "dev:api": "cd packages/api && npx tsx src/server.ts",
+    "dev:worker": "cd packages/worker && npx tsx src/index.ts",
+    "dev:frontend": "cd packages/frontend && npm run dev"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "@types/node": "^24.1.0",
+    "drizzle-kit": "^0.31.4",
+    "drizzle-orm": "^0.44.4",
+    "jest": "^30.0.5",
+    "ts-jest": "^29.4.1",
+    "tsx": "^4.20.3",
+    "typescript": "^5.9.2",
+    "concurrently": "^8.2.0"
+  },
+  "dependencies": {
+    "@opentelemetry/api": "^1.9.0",
+    "bullmq": "^5.56.9",
+    "ethers": "^6.15.0",
+    "express-session": "^1.18.2",
+    "ioredis": "^5.7.0",
+    "pg": "^8.16.3",
+    "ponder": "^0.12.0",
+    "siwe": "^3.0.0",
+    "express": "^4.18.0",
+    "cors": "^2.8.5",
+    "socket.io": "^4.7.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

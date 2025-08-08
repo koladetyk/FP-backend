@@ -1,0 +1,21 @@
+{
+  "name": "@nouns-tracker/indexer",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "ponder dev",
+    "start": "ponder start",
+    "codegen": "ponder codegen",
+    "build": "ponder build"
+  },
+  "dependencies": {
+    "bullmq": "^4.18.3",
+    "dotenv": "^16.0.0",
+    "ioredis": "^5.7.0",
+    "ponder": "^0.11.0"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}

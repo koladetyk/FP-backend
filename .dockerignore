@@ -1,0 +1,15 @@
+node_modules
+*/node_modules
+**/.ponder
+**/dist
+**/build
+**/.env*
+compose down
+docker compose up -d --build*/.env.example
+**/.git
+**/.gitignore
+**/README.md
+**/Dockerfile*
+**/docker-compose*
+pnpm jestlock.yaml
+jest packages/worker/src/jobs/__tests__/auctionCycle.test.ts*/package-lock.json

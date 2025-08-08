@@ -1,0 +1,136 @@
+services:
+  # Infrastructure services first
+  postgres:
+    image: postgres:15-alpine
+    platform: linux/amd64
+    container_name: nouns-auction-tracker-postgres
+    environment:
+      POSTGRES_DB: nouns
+      POSTGRES_USER: nounsuser
+      POSTGRES_PASSWORD: password123
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nounsuser -d nouns"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    platform: linux/amd64
+    container_name: nouns-auction-tracker-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # UI services (depend on infrastructure)
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: nouns-auction-tracker-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    ports:
+      - "8080:80"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    platform: linux/amd64
+    container_name: nouns-auction-tracker-redis-ui
+    environment:
+      REDIS_HOSTS: local:redis:6379
+    ports:
+      - "8082:8081"
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    container_name: nouns-auction-tracker-worker
+    environment:
+      DATABASE_URL: postgresql://nounsuser:password123@postgres:5432/nouns
+      REDIS_URL: redis://redis:6379
+      NODE_ENV: development
+      DOCKER_ENV: "true"
+      ALCHEMY_MAINNET_URL: ${ALCHEMY_MAINNET_URL}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    volumes:
+      - ./packages:/app/packages
+      - ./drizzle:/app/drizzle
+      - ./abis:/app/abis
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: nouns-auction-tracker-api
+    ports:
+      - "4001:4001"
+    environment:
+      DATABASE_URL: postgresql://nounsuser:password123@postgres:5432/nouns
+      REDIS_URL: redis://redis:6379
+      SESSION_SECRET: ${SESSION_SECRET}
+      NODE_ENV: development
+      DOCKER_ENV: "true"
+      ALCHEMY_MAINNET_URL: ${ALCHEMY_MAINNET_URL}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    volumes:
+      - ./packages:/app/packages
+      - ./drizzle:/app/drizzle
+      - ./abis:/app/abis
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    platform: linux/amd64  # Force x64 platform
+    container_name: nouns-auction-tracker-frontend
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_URL: http://localhost:4001
+      NODE_ENV: development
+    depends_on:
+      - api
+    volumes:
+      - ./packages/frontend/src:/app/packages/frontend/src
+      - ./packages/frontend/public:/app/packages/frontend/public
+      - ./packages/frontend/index.html:/app/packages/frontend/index.html
+      - ./packages/frontend/package.json:/app/packages/frontend/package.json
+      - ./packages/frontend/vite.config.ts:/app/packages/frontend/vite.config.ts
+      - ./packages/frontend/tsconfig.json:/app/packages/frontend/tsconfig.json
+      - ./packages/frontend/tailwind.config.js:/app/packages/frontend/tailwind.config.js
+      - ./packages/frontend/postcss.config.js:/app/packages/frontend/postcss.config.js
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  default:
+    name: nouns-auction-tracker
