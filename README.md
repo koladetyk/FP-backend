@@ -2,6 +2,14 @@
 
 A real-time, full-stack auction tracking system for the Nouns DAO ecosystem. Built with Ponder blockchain indexing, WebSocket streaming, and Sign-In with Ethereum authentication.
 
+## 🎬 Demo Video
+
+**👀 Watch the full system in action:**
+
+[![Nouns Auction Tracker Demo](https://img.shields.io/badge/🎥_Watch_Demo-4285F4?style=for-the-badge&logo=googledrive&logoColor=white)](https://drive.google.com/file/d/1zkkj11Fa9sss-1kZ0V2ZExBov1J5GKUs/view?usp=sharing)
+
+*See real-time blockchain indexing, WebSocket streaming, headline storing, paginated API  and wallet authentication in a complete 3-minute walkthrough.*
+
 ## ⚡ Quick Start
 
 **Start the entire stack with one command:**
